@@ -1,4 +1,43 @@
 //=====================전역변수영역============================
+// //난이도-카드장수 선택
+
+// var total;
+// var levNumber;
+
+// $easy = document.getElementById('#easy');
+// $nomal = document.getElementById('#nomal');
+// $hard = document.getElementById('#hard');
+
+// $easy.addEventListener("click",() => {
+//     levNumber = 1;
+// });
+// $nomal.addEventListener("click",() => {
+//     levNumber = 10;
+// });
+// $hard.addEventListener("click",() => {
+//     levNumber = 100;
+// });
+
+
+
+// function level(){
+    
+// if (levNumber === 1) {
+//     total = 12;
+// } else if (levNumber === 10) {
+//     total = 24;
+// } else {
+//     total = 36;
+// }
+// }
+// level(levNumber);
+
+// console.log(total);
+
+
+
+
+
 
 //가로세로 설정
 const horizon = 4;
@@ -54,7 +93,7 @@ const shuffle = () => {
             colorSelect.splice(Math.floor(Math.random() * colorSelect.length), 1)
         );
     }
-    console.log(color);
+    // console.log(color);
 }
 
 //카드세팅
@@ -77,8 +116,9 @@ const setting = (hori, verti) => {
         $cardInner.classList.add("card-inner");
         $cardFront.classList.add("card-front")
         $cardBack.classList.add("card-back");
-        //카드 아이디값 생성
-        $cardBack.setAttribute("id", i);
+
+        //**힌트가능 카드 선정 클래스 부여
+        $card.classList.add("get-hint");
         
 
         //문서객체를 추가하기
@@ -131,66 +171,66 @@ const setting = (hori, verti) => {
 
     /* 
     clickFlag가 true 일 때만 작동하도록 
-    조건이 맞을 때 toggle("flip")기능으로 카드 뒤집기
+    조건이 맞을 때 toggle"flip"기능으로 카드 뒤집기
     클릭한 요소를 클릭요소 배열에 옮기고 참거짓 실행 후 클릭요소 배열에서 다시 지우기.
-     1)참:완료 배열에 넣기. 2)거짓:다시 뒤집기 
+     1.참:완료 배열에 넣기. 2.거짓:다시 뒤집기 
     */
 
 
     $Cards.forEach((card, _) => { 
         
-        card.addEventListener("click", e => {
+        card.addEventListener("click",() => {
 
-            //if e.target에 class flip이 있을 때 cardFlag:false
-
-            // let click = card;
-            // console.log(click);
-            // console.log(e.target);
-            // console.log(click.classList.contains('flip')); 
-            // let etarget = e.target;
-            // etarget.
-
-            // if(card.classList.contains('flip')) {
-            //     clickFlag = false;
-            // }
-            //id값 추출
-            // const $cardBack = document.querySelector(".card-back");
-            // console.log($cardBack);
-            
-            // const $id = $cardInner.getElementById('id');
-            // console.log($id);
-            
             if (clickFlag && !cardFinish.includes(card) && !card.classList.contains('flip')) { //card??? ()가 비어서 대상 이름이 들어가는건가? 
                 
                 // 오류 발견!: 같은 카드를 두 번 누르면 같은 카드로 인식->뒤집힌 채로 고정되버린다!
-                // => card.classList.contains('flip')를 조건에 넣는다.
+                //if e.target에 class flip이 있을 때 cardFlag:false            
 
+                // 정답을 맞춘 카드도 다시 클릭이 가능하다. cardFinish에 없는 요소만 클릭이 가능하도록 해야한다! 
+                // => 맨 처음조건에 조건 추가: cardFinish에 포함되지 않은 요소일 때(!cardFinish.include(card)) 
+                
                 card.classList.toggle("flip");
 
-                
                 cardArray.push(card); //클릭이벤트가 진행된 card를 배열에 넣기??
 
 
                 if (cardArray.length === 2) {
 
                     //카드 색상값 추출
-                    // console.log(cardArray[0].querySelector(".card-back").style.backgroundColor);
-                    // console.log(cardArray[1].querySelector(".card-back").style.backgroundColor);
                     let cardA =
                         cardArray[0].querySelector(".card-back").style.backgroundColor;
                     let cardB =
                         cardArray[1].querySelector(".card-back").style.backgroundColor;
 
+
                     //카드비교 시작
                     if (cardA === cardB) {
                         cardFinish.push(cardArray[0]);
                         cardFinish.push(cardArray[1]);
+                        console.log('성공한 카드');
                         console.log(cardFinish);
 
                         cardArray = [];
 
-                        // 정답을 맞춘 카드도 다시 클릭이 가능하다. cardFinish에 없는 요소만 클릭이 가능하도록 해야한다! 
-                        // => 맨 처음조건에 조건 추가: cardFinish에 포함되지 않은 요소일 때(!cardFinish.include(card)) 
+                        //삭제한 요소와 같은 짝을 찾아서 삭제해야한다. => 너무 어렵다..
+                        //정답일 시에는 get-hint클래스 삭제: 마지막 클릭한것만 삭제된다..
+                        //결론: flip을 가지고 있으며 get-hint가 없는 요소를 찾자..
+                        
+                        // 실패 원인들 기록...
+                        // $Cards.querySelectorAll => 여기서 Cards는 클릭한 요소이기 때문..
+                        // $flipcard.classList.remove('get-hint') => 배열이라 안되고 [i]번째마다 지우기를 반복.
+                        
+                        //for문이 안되는 이유는 모르겠다. for-of문으로 돌리니 된다..
+                        // for(i = 0; i<2; i++) {
+                        //     $flipcard[i].classList.remove('get-hint');
+                        // }
+
+                        const $flipcard = document.querySelectorAll(".flip");
+                        
+                        for(let i of [...$flipcard]) {
+                            i.classList.remove('get-hint');
+                        }
+
 
                         //카드 초기화
                         if (cardFinish.length === cardTotal) {
@@ -241,21 +281,49 @@ const setting = (hori, verti) => {
     $hint.addEventListener('click', e => {
 
 
-        //*****************성공한 카드는 제외하고 돌리기
         //*****************힌트 카운트 기능 넣기
-
-
-        clickFlag = false;
         
-        let $card = document.getElementsByClassName("card");
-        let i = Math.floor(Math.random() * cardTotal);
-        $card[i].classList.add("flip");
-        
-        setTimeout(() => {
-            $card[i].classList.remove("flip");
-            clickFlag = true;
-        }, 1000);
+        //성공한 카드는 제외하고 돌리기
+        //if i가 cardFinish의 배열에 없는 요소일 때 :cardHintList의 배열에서 뽑기? ->실패
+        //flip이 없는 애들만 돌리기...는...안되나...?
+        //get-hint클래스가 있는 요소들만 뽑아서 랜덤 돌리기..
+            
+            clickFlag = false;
+            
+            const $card = document.getElementsByClassName("get-hint");
+            const i = Math.floor(Math.random() * $card.length);
 
+
+
+            
+            let cardFlip = $card[i];
+            console.log('gethint카드 i번째');
+            console.log(cardFlip);
+            //랜덤 카드의 생상값
+            // let cardcolor = cardFlip.querySelector(".card-back").style.backgroundColor
+
+            // console.log('힌트리스트');
+            // console.log(cardHintList);
+
+            // console.log('힌트리스트에서 i번째');
+            // console.log(cardHintList[i]);
+
+            // console.log('힌트카드');
+            // console.log(cardFlip);
+
+            // 조건 : cardcolor === cardHintList[i]
+            //       !cardFlip.classList.contains('flip')
+  
+            //if문 원본.
+            if (!cardFlip.classList.contains('flip')){
+                
+                $card[i].classList.add("flip");
+            
+                setTimeout(() => {
+                    $card[i].classList.remove("flip");
+                    clickFlag = true;
+                }, 1000);
+            }
     })
 
 
